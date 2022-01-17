@@ -1,0 +1,5 @@
+.env
+/build
+build
+node-modules
+/node-modules
