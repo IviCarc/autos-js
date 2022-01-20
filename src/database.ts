@@ -4,6 +4,9 @@ const { open } = require("sqlite");
 const nodemon = require("nodemon");
 const { model } = require("mongoose");
 
+// PROXIMO A REALIZAR DAR FORMATO A LA FECHA COMO AÑO/MES/DIA PARA ASI ORDENARLO MEJOR //
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!/
+
 interface Controller {
 	[key: string]: Function;
 }
@@ -18,6 +21,17 @@ interface FinalData {
 	push: Function;
 }
 [];
+
+const SortArray = (x, y) => {
+	// Esta funcion ordena el auto_cliente por fecha, de la más reciente a la más antigua
+	if (x.fecha < y.fecha) {
+		return 1;
+	}
+	if (x.fecha > y.fecha) {
+		return -1;
+	}
+	return 0;
+};
 
 const controller: Controller = {};
 
@@ -43,7 +57,7 @@ controller.getByClient = async (req, res) => {
 		[cliente_id]
 	);
 
-	let finalData: FinalData;
+	let finalData = [];
 
 	for (const auto_cliente of autos_cliente) {
 		const { id, auto_id, patente } = auto_cliente;
@@ -51,10 +65,9 @@ controller.getByClient = async (req, res) => {
 			auto_id,
 		]);
 
-		const reparaciones: [{ trabajo: string; kilometraje: number; fecha: string }] = await db.all(
-			"SELECT trabajo, kilometraje, fecha FROM Reparacion WHERE auto_cliente_id = ?",
-			id
-		);
+		const reparaciones: [{ trabajo: string; kilometraje: number; fecha: string }] = (
+			await db.all("SELECT trabajo, kilometraje, fecha FROM Reparacion WHERE auto_cliente_id = ?", id)
+		).sort(SortArray);
 
 		for (const reparacion of reparaciones) {
 			const { trabajo, kilometraje, fecha } = reparacion;
@@ -92,7 +105,7 @@ controller.getByPatent = async (req, res) => {
 		return;
 	}
 
-	let finalData: FinalData;
+	let finalData = [];
 
 	for (const auto_cliente of autos_cliente) {
 		const { id, cliente_id, auto_id } = auto_cliente;
@@ -123,52 +136,21 @@ controller.getByPatent = async (req, res) => {
 		}
 	}
 
-	res.send(finalData);
+	res.send(finalData.sort(SortArray));
 	db.close();
 };
 
-controller.getPatentsList = async (req, res) => {
+controller.getList = async (req, res) => {
 	const db: any = await open({
 		filename: "./db_autos",
 		driver: sqlite3.Database,
 	});
 
-	const data = await db.all("SELECT patente FROM Auto_Cliente");
+	const clientes: string[] = (await db.all("SELECT cliente FROM Cliente")).map((obj) => obj.cliente);
+	const autos: string[] = (await db.all("SELECT modelo FROM  Auto")).map((obj) => obj.modelo);
+	const patentes: string[] = (await db.all("SELECT patente FROM  Auto_Cliente")).map((obj) => obj.patente);
 
-	const lista = data.map((obj) => {
-		return obj.patente;
-	});
-	res.send(lista);
-	db.close();
-};
-
-controller.getClientsList = async (req, res) => {
-	const db: any = await open({
-		filename: "./db_autos",
-		driver: sqlite3.Database,
-	});
-
-	const data = await db.all("SELECT cliente FROM Cliente");
-
-	const lista = data.map((obj) => {
-		return obj.cliente;
-	});
-	res.send(lista);
-	db.close();
-};
-
-controller.getAutosList = async (req, res) => {
-	const db: any = await open({
-		filename: "./db_autos",
-		driver: sqlite3.Database,
-	});
-
-	const data = await db.all("SELECT modelo FROM Auto");
-
-	const lista = data.map((obj) => obj.modelo);
-
-	res.send(lista);
-	db.close();
+	res.send({ clientes: clientes, autos: autos, patentes: patentes });
 };
 
 controller.newRecord = async (req, res) => {

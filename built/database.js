@@ -41,6 +41,16 @@ var open = require("sqlite").open;
 var nodemon = require("nodemon");
 var model = require("mongoose").model;
 [];
+var SortArray = function (x, y) {
+    // Esta funcion ordena el auto_cliente por fecha, de la más reciente a la más antigua
+    if (x.fecha < y.fecha) {
+        return 1;
+    }
+    if (x.fecha > y.fecha) {
+        return -1;
+    }
+    return 0;
+};
 var controller = {};
 controller.getByClient = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var cliente, db, cliente_id, e_1, autos_cliente, finalData, _i, autos_cliente_1, auto_cliente, id, auto_id, patente, modelo, reparaciones, _a, reparaciones_1, reparacion, trabajo, kilometraje, fecha;
@@ -70,6 +80,7 @@ controller.getByClient = function (req, res) { return __awaiter(_this, void 0, v
             case 5: return [4 /*yield*/, db.all("SELECT id, auto_id, patente FROM Auto_Cliente WHERE cliente_id = ?", [cliente_id])];
             case 6:
                 autos_cliente = _b.sent();
+                finalData = [];
                 _i = 0, autos_cliente_1 = autos_cliente;
                 _b.label = 7;
             case 7:
@@ -83,7 +94,7 @@ controller.getByClient = function (req, res) { return __awaiter(_this, void 0, v
                 modelo = (_b.sent()).modelo;
                 return [4 /*yield*/, db.all("SELECT trabajo, kilometraje, fecha FROM Reparacion WHERE auto_cliente_id = ?", id)];
             case 9:
-                reparaciones = _b.sent();
+                reparaciones = (_b.sent()).sort(SortArray);
                 for (_a = 0, reparaciones_1 = reparaciones; _a < reparaciones_1.length; _a++) {
                     reparacion = reparaciones_1[_a];
                     trabajo = reparacion.trabajo, kilometraje = reparacion.kilometraje, fecha = reparacion.fecha;
@@ -127,6 +138,7 @@ controller.getByPatent = function (req, res) { return __awaiter(_this, void 0, v
                     db.close();
                     return [2 /*return*/];
                 }
+                finalData = [];
                 _i = 0, autos_cliente_2 = autos_cliente;
                 _c.label = 3;
             case 3:
@@ -172,36 +184,14 @@ controller.getByPatent = function (req, res) { return __awaiter(_this, void 0, v
                 _i++;
                 return [3 /*break*/, 3];
             case 10:
-                res.send(finalData);
+                res.send(finalData.sort(SortArray));
                 db.close();
                 return [2 /*return*/];
         }
     });
 }); };
-controller.getPatentsList = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var db, data, lista;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, open({
-                    filename: "./db_autos",
-                    driver: sqlite3.Database,
-                })];
-            case 1:
-                db = _a.sent();
-                return [4 /*yield*/, db.all("SELECT patente FROM Auto_Cliente")];
-            case 2:
-                data = _a.sent();
-                lista = data.map(function (obj) {
-                    return obj.patente;
-                });
-                res.send(lista);
-                db.close();
-                return [2 /*return*/];
-        }
-    });
-}); };
-controller.getClientsList = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var db, data, lista;
+controller.getList = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var db, clientes, autos, patentes;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, open({
@@ -212,32 +202,14 @@ controller.getClientsList = function (req, res) { return __awaiter(_this, void 0
                 db = _a.sent();
                 return [4 /*yield*/, db.all("SELECT cliente FROM Cliente")];
             case 2:
-                data = _a.sent();
-                lista = data.map(function (obj) {
-                    return obj.cliente;
-                });
-                res.send(lista);
-                db.close();
-                return [2 /*return*/];
-        }
-    });
-}); };
-controller.getAutosList = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var db, data, lista;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, open({
-                    filename: "./db_autos",
-                    driver: sqlite3.Database,
-                })];
-            case 1:
-                db = _a.sent();
-                return [4 /*yield*/, db.all("SELECT modelo FROM Auto")];
-            case 2:
-                data = _a.sent();
-                lista = data.map(function (obj) { return obj.modelo; });
-                res.send(lista);
-                db.close();
+                clientes = (_a.sent()).map(function (obj) { return obj.cliente; });
+                return [4 /*yield*/, db.all("SELECT modelo FROM  Auto")];
+            case 3:
+                autos = (_a.sent()).map(function (obj) { return obj.modelo; });
+                return [4 /*yield*/, db.all("SELECT patente FROM  Auto_Cliente")];
+            case 4:
+                patentes = (_a.sent()).map(function (obj) { return obj.patente; });
+                res.send({ clientes: clientes, autos: autos, patentes: patentes });
                 return [2 /*return*/];
         }
     });

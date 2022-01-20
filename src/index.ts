@@ -3,6 +3,9 @@ const app = express();
 require("dotenv").config();
 const cors = require("cors");
 
+// PROXIMO A REALIZAR DAR FORMATO A LA FECHA COMO AÑO/MES/DIA PARA ASI ORDENARLO MEJOR //
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!/
+
 const {
 	getByClient,
 	getClientsList,
@@ -11,19 +14,14 @@ const {
 	newRecord,
 	getPatentsList,
 	getAutosList,
+	getList,
 } = require("./database");
 
 app.use(cors());
 
 app.use(express.json());
 
-const URL = process.env.URL || "http://localhost:5000";
-
-app.get("/lista/clientes", getClientsList);
-
-app.get("/lista/patentes", getPatentsList);
-
-app.get("/lista/autos", getAutosList);
+app.get("/lista", getList);
 
 app.get("/cliente/:cliente", getByClient);
 
@@ -31,6 +29,6 @@ app.get("/patente/:patente", getByPatent);
 
 app.post("/nuevo", newRecord);
 
-app.listen(process.env.PORT | 5000, () => {
+app.listen(process.env.PORT || 5000, () => {
 	console.log("Server listening on port", process.env.PORT || 5000);
 });
