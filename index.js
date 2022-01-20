@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const cors = require('cors');
-const {getByClient, getClientsList, getByPatent, getByRegex, newRecord, getPatentsList} = require('./database');
+const { getByClient, getClientsList, getByPatent, getByRegex, newRecord, getPatentsList, getAutosList } = require('./database');
 
 app.use(cors());
 
@@ -14,11 +14,11 @@ app.get("/lista/clientes", getClientsList);
 
 app.get("/lista/patentes", getPatentsList)
 
+app.get('/lista/autos', getAutosList);
+
 app.get('/cliente/:cliente', getByClient);
 
 app.get('/patente/:patente', getByPatent);
-
-app.get('/buscar/:regex', getByRegex);
 
 app.post('/nuevo', newRecord);
 
