@@ -3,19 +3,7 @@ const app = express();
 require("dotenv").config();
 const cors = require("cors");
 
-// PROXIMO A REALIZAR DAR FORMATO A LA FECHA COMO AÑO/MES/DIA PARA ASI ORDENARLO MEJOR //
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!/
-
-const {
-	getByClient,
-	getClientsList,
-	getByPatent,
-	getByRegex,
-	newRecord,
-	getPatentsList,
-	getAutosList,
-	getList,
-} = require("./database");
+const { getByClient, getByPatent, newRecord, getList } = require("./database");
 
 app.use(cors());
 

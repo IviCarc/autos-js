@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,12 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.newRecord = exports.getByPatent = exports.getByClient = exports.getList = void 0;
 var sqlite3 = require("sqlite3");
 sqlite3.verbose();
 var open = require("sqlite").open;
-var nodemon = require("nodemon");
-var model = require("mongoose").model;
 [];
 var SortArray = function (x, y) {
     // Esta funcion ordena el auto_cliente por fecha, de la más reciente a la más antigua
@@ -51,8 +51,7 @@ var SortArray = function (x, y) {
     }
     return 0;
 };
-var controller = {};
-controller.getByClient = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+var getByClient = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var cliente, db, cliente_id, e_1, autos_cliente, finalData, _i, autos_cliente_1, auto_cliente, id, auto_id, patente, modelo, reparaciones, _a, reparaciones_1, reparacion, trabajo, kilometraje, fecha;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -118,7 +117,8 @@ controller.getByClient = function (req, res) { return __awaiter(_this, void 0, v
         }
     });
 }); };
-controller.getByPatent = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+exports.getByClient = getByClient;
+var getByPatent = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var patente, db, autos_cliente, finalData, _i, autos_cliente_2, auto_cliente, id, cliente_id, auto_id, modelo, clientes, _a, clientes_1, clienteArr, cliente, reparaciones, _b, reparaciones_2, reparacion, trabajo, kilometraje, fecha;
     return __generator(this, function (_c) {
         switch (_c.label) {
@@ -190,7 +190,8 @@ controller.getByPatent = function (req, res) { return __awaiter(_this, void 0, v
         }
     });
 }); };
-controller.getList = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+exports.getByPatent = getByPatent;
+var getList = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var db, clientes, autos, patentes;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -214,7 +215,8 @@ controller.getList = function (req, res) { return __awaiter(_this, void 0, void 
         }
     });
 }); };
-controller.newRecord = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+exports.getList = getList;
+var newRecord = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var db, _a, cliente, auto, trabajo, km, fecha, patente, cliente_id, auto_id, auto_cliente_id;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -265,4 +267,4 @@ controller.newRecord = function (req, res) { return __awaiter(_this, void 0, voi
         }
     });
 }); };
-module.exports = controller;
+exports.newRecord = newRecord;

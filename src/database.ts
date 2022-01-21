@@ -1,15 +1,7 @@
+export {};
 const sqlite3 = require("sqlite3");
 sqlite3.verbose();
 const { open } = require("sqlite");
-const nodemon = require("nodemon");
-const { model } = require("mongoose");
-
-// PROXIMO A REALIZAR DAR FORMATO A LA FECHA COMO AÑO/MES/DIA PARA ASI ORDENARLO MEJOR //
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!/
-
-interface Controller {
-	[key: string]: Function;
-}
 
 interface FinalData {
 	cliente: string;
@@ -18,7 +10,6 @@ interface FinalData {
 	km: number;
 	fecha: string;
 	patente: string;
-	push: Function;
 }
 [];
 
@@ -33,9 +24,7 @@ const SortArray = (x, y) => {
 	return 0;
 };
 
-const controller: Controller = {};
-
-controller.getByClient = async (req, res) => {
+const getByClient = async (req, res) => {
 	const { cliente }: { cliente: string } = req.params; // IMPORTANT SYNTAX
 
 	const db: any = await open({
@@ -57,7 +46,7 @@ controller.getByClient = async (req, res) => {
 		[cliente_id]
 	);
 
-	let finalData = [];
+	let finalData: FinalData[] = [];
 
 	for (const auto_cliente of autos_cliente) {
 		const { id, auto_id, patente } = auto_cliente;
@@ -86,7 +75,7 @@ controller.getByClient = async (req, res) => {
 	db.close();
 };
 
-controller.getByPatent = async (req, res) => {
+const getByPatent = async (req, res) => {
 	const { patente }: { patente: string } = req.params;
 
 	const db: any = await open({
@@ -105,7 +94,7 @@ controller.getByPatent = async (req, res) => {
 		return;
 	}
 
-	let finalData = [];
+	let finalData: FinalData[] = [];
 
 	for (const auto_cliente of autos_cliente) {
 		const { id, cliente_id, auto_id } = auto_cliente;
@@ -140,7 +129,7 @@ controller.getByPatent = async (req, res) => {
 	db.close();
 };
 
-controller.getList = async (req, res) => {
+const getList = async (req, res) => {
 	const db: any = await open({
 		filename: "./db_autos",
 		driver: sqlite3.Database,
@@ -153,7 +142,7 @@ controller.getList = async (req, res) => {
 	res.send({ clientes: clientes, autos: autos, patentes: patentes });
 };
 
-controller.newRecord = async (req, res) => {
+const newRecord = async (req, res) => {
 	const db: any = await open({
 		filename: "./db_autos",
 		driver: sqlite3.Database,
@@ -207,4 +196,4 @@ controller.newRecord = async (req, res) => {
 	db.close();
 };
 
-module.exports = controller;
+export { getList, getByClient, getByPatent, newRecord };
